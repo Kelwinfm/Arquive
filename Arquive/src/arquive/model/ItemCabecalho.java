@@ -17,26 +17,22 @@ public class ItemCabecalho {
      */
     private byte status;
 
-    private int tamanhoNome;
-
     private String nome;
 
     private int posicao;
 
-    private int tamanhoArq;
+    private int tamanhoArquivo;
 
     public ItemCabecalho(
             byte status,
-            int tamanhoNome,
             String nome,
             int posicao,
             int tamanhoArquivo
     ) {
         this.status = status;
-        this.tamanhoNome = tamanhoNome;
         this.nome = nome;
         this.posicao = posicao;
-        this.tamanhoArq = tamanhoArquivo;
+        this.tamanhoArquivo = tamanhoArquivo;
     }
 
     public byte getStatus() {
@@ -45,14 +41,6 @@ public class ItemCabecalho {
 
     public void setStatus(byte status) {
         this.status = status;
-    }
-
-    public int getTamanhoNome() {
-        return tamanhoNome;
-    }
-
-    public void setTamanhoNome(int tamanhoNome) {
-        this.tamanhoNome = tamanhoNome;
     }
 
     public String getNome() {
@@ -71,12 +59,12 @@ public class ItemCabecalho {
         this.posicao = posicao;
     }
 
-    public int getTamanhoArq() {
-        return tamanhoArq;
+    public int getTamanhoArquivo() {
+        return tamanhoArquivo;
     }
 
-    public void setTamanhoArq(int tamanhoArq) {
-        this.tamanhoArq = tamanhoArq;
+    public void setTamanhoArquivo(int tamanhoArquivo) {
+        this.tamanhoArquivo = tamanhoArquivo;
     }
 
 }
