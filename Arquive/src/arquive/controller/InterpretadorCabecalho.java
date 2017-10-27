@@ -6,27 +6,16 @@
  */
 package arquive.controller;
 
+import arquive.exceptions.CabecalhoCorrompidoException;
 import arquive.model.Cabecalho;
 import arquive.model.ItemCabecalho;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.text.ParseException;
 
 /**
  * Responsável por interpretar bytes a fim de se obter um Cabecalho
  */
 public class InterpretadorCabecalho {
-
-    /**
-     * Classe utilizada para geração de exceções na interpretação do cabeçalho
-     */
-    private static class CorrompidoException extends ParseException {
-
-        public CorrompidoException(String message, int offset) {
-            super("Arquivo corrompido: " + message, offset);
-        }
-
-    }
 
     private static final Charset UTF8_CHARSET = Charset.forName("UTF-8");
 
@@ -51,11 +40,11 @@ public class InterpretadorCabecalho {
      * avança o ponteiro
      *
      * @return
-     * @throws ParseException
+     * @throws CabecalhoCorrompidoException
      */
-    private int interpretarInteiro() throws ParseException {
+    private int interpretarInteiro() throws CabecalhoCorrompidoException {
         if (bytes.length < posicaoAtual + 4) {
-            throw new CorrompidoException("Fim de arquivo inesperado", posicaoAtual);
+            throw new CabecalhoCorrompidoException("Fim de arquivo inesperado", posicaoAtual);
         }
         // Converter quatro bytes para inteiro
         byte[] inteiroEmBytes = {
@@ -76,18 +65,18 @@ public class InterpretadorCabecalho {
      * ponteiro
      *
      * @return
-     * @throws ParseException
+     * @throws CabecalhoCorrompidoException
      */
-    private String interpretarStringUTF8(int tamanho) throws ParseException {
+    private String interpretarStringUTF8(int tamanho) throws CabecalhoCorrompidoException {
         if (bytes.length < posicaoAtual + tamanho) {
-            throw new CorrompidoException("Fim de arquivo inesperado", posicaoAtual);
+            throw new CabecalhoCorrompidoException("Fim de arquivo inesperado", posicaoAtual);
         }
 
         byte[] stringEmBytes = new byte[tamanho];
         for (int j = 0; j < tamanho; j++) {
             stringEmBytes[j] = bytes[posicaoAtual + j];
         }
-        String string = decodificarBytesUTF8(stringEmBytes);
+        String string = converterBytesEmStringUTF8(stringEmBytes);
 
         // Mover n bytes à frente
         posicaoAtual += tamanho;
@@ -99,9 +88,9 @@ public class InterpretadorCabecalho {
      * Interpreta um conjunto de bytes e transformá-lo em um Cabecalho
      *
      * @return
-     * @throws ParseException
+     * @throws CabecalhoCorrompidoException
      */
-    public Cabecalho interpretar() throws ParseException {
+    public Cabecalho interpretar() throws CabecalhoCorrompidoException {
         Cabecalho cabecalho = new Cabecalho();
 
         // Interpretar itens do cabeçalho
@@ -142,7 +131,7 @@ public class InterpretadorCabecalho {
         return cabecalho;
     }
 
-    private static String decodificarBytesUTF8(byte[] bytes) {
+    private static String converterBytesEmStringUTF8(byte[] bytes) {
         return new String(bytes, UTF8_CHARSET);
     }
 
