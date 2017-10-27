@@ -8,13 +8,30 @@ package arquive.controller;
 
 import arquive.model.Cabecalho;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 
 /**
- * Responsável por interpretar bytes a fim de se obter um Cabecalho e vice versa
+ * Responsável por interpretar bytes a fim de se obter um Cabecalho
  */
 public class InterpretadorCabecalho {
+
+    /**
+     * Classe utilizada para geração de exceções na interpretação do cabeçalho
+     */
+    private static class CorrompidoException extends ParseException {
+
+        public CorrompidoException(String message, int offset) {
+            super("Arquivo corrompido: " + message, offset);
+        }
+
+    }
+
+    private static final Charset UTF8_CHARSET = Charset.forName("UTF-8");
+
+    private static String decodificarBytesUTF8(byte[] bytes) {
+        return new String(bytes, UTF8_CHARSET);
+    }
 
     private static int converterBytesParaInteiro(byte[] bytes) {
         assert bytes.length == 4;
@@ -22,11 +39,14 @@ public class InterpretadorCabecalho {
         return ByteBuffer.wrap(bytes).getInt();
     }
 
-    private static byte[] converterInteiroParaBytes(int inteiro) {
-        return ByteBuffer.allocate(4).putInt(inteiro).array();
-    }
-
-    public static Cabecalho interpretarBytes(byte[] bytes) throws ParseException {
+    /**
+     * Interpreta uma lista
+     *
+     * @param bytes
+     * @return
+     * @throws ParseException
+     */
+    public static Cabecalho interpretarBytesCabecalho(byte[] bytes) throws ParseException {
         Cabecalho cabecalho = new Cabecalho();
 
         // Interpretar itens do cabeçalho
@@ -38,13 +58,27 @@ public class InterpretadorCabecalho {
 
             // Interpretar tamanho do nome do item
             if (bytes.length < i + 4) {
-                throw new ParseException(
-                        "Arquivo corrompido; fim de arquivo inesperado",
-                        i
-                );
+                throw new CorrompidoException("Fim de arquivo inesperado", i);
             }
-            byte[] tamanhoNomeBytes = {bytes[0], bytes[1], bytes[2], bytes[3]};
+            byte[] tamanhoNomeBytes = {bytes[i + 0], bytes[i + 1], bytes[i + 2], bytes[i + 3]};
             int tamanhoNome = converterBytesParaInteiro(tamanhoNomeBytes);
+
+            // Mover quatro bytes à frente
+            i += 4;
+
+            // Interpretar nome do item
+            if (bytes.length < i + tamanhoNome) {
+                throw new CorrompidoException("Fim de arquivo inesperado", i);
+            }
+            byte[] nomeBytes = new byte[tamanhoNome];
+            for (int j = 0; j < tamanhoNome; j++) {
+                nomeBytes[j] = bytes[i + j];
+            }
+            String nome = decodificarBytesUTF8(nomeBytes);
+
+            // Mover n bytes à frente
+            i += tamanhoNome;
+
         }
 
         return cabecalho;
