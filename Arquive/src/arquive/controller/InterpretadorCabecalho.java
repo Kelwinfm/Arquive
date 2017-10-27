@@ -7,6 +7,7 @@
 package arquive.controller;
 
 import arquive.model.Cabecalho;
+import arquive.model.ItemCabecalho;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.text.ParseException;
@@ -110,11 +111,32 @@ public class InterpretadorCabecalho {
                 break;
             }
 
+            // Status do item
+            byte status = bytes[posicaoAtual];
+
+            // Avançar um byte
+            posicaoAtual++;
+
             // Interpretar tamanho do nome do item
             int tamanhoNome = interpretarInteiro();
 
             // Interpretar nome do item
             String nome = interpretarStringUTF8(tamanhoNome);
+
+            // Interpretar número que indica posição do início do arquivo
+            int inicioArquivo = interpretarInteiro();
+
+            // Interpretar tamanho do arquivo
+            int tamanhoArquivo = interpretarInteiro();
+
+            // Adicionar este novo item ao cabeçalho
+            ItemCabecalho item = new ItemCabecalho(
+                    status,
+                    nome,
+                    inicioArquivo,
+                    tamanhoArquivo
+            );
+            cabecalho.adicionarItem(item);
         }
 
         return cabecalho;
