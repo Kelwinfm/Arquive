@@ -9,7 +9,7 @@ package arquive;
  *
  * @author kelwi
  */
-public class Arquive {
+public class Main {
 
     /**
      * @param args the command line arguments
