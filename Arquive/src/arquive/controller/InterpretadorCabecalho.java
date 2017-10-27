@@ -17,8 +17,6 @@ import java.nio.charset.Charset;
  */
 public class InterpretadorCabecalho {
 
-    private static final Charset UTF8_CHARSET = Charset.forName("UTF-8");
-
     /**
      * Conjunto de bytes a ser interpretado
      */
@@ -132,7 +130,7 @@ public class InterpretadorCabecalho {
     }
 
     private static String converterBytesEmStringUTF8(byte[] bytes) {
-        return new String(bytes, UTF8_CHARSET);
+        return new String(bytes, Charset.forName("UTF-8"));
     }
 
     private static int converterBytesParaInteiro(byte[] bytes) {
