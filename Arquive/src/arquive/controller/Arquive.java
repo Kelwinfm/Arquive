@@ -4,7 +4,9 @@
  * Equipe desenvolvedora do sistema Arquive para Estrutura de Arquivos
  * Universidade Estadual de Campinas - 2017
  */
-package arquive;
+package arquive.controller;
+
+import arquive.view.TelaInicial;
 
 /**
  * Classe controladora do fluxo principal do Arquive

@@ -4,7 +4,7 @@
  * Equipe desenvolvedora do sistema Arquive para Estrutura de Arquivos
  * Universidade Estadual de Campinas - 2017
  */
-package arquive;
+package arquive.view;
 
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;

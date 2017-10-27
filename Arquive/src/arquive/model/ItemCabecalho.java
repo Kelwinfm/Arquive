@@ -4,7 +4,7 @@
  * Equipe desenvolvedora do sistema Arquive para Estrutura de Arquivos
  * Universidade Estadual de Campinas - 2017
  */
-package arquive;
+package arquive.model;
 
 /**
  * Descritor de um item do cabeçalho, o qual se refere à uma arquivo dentro do
@@ -12,6 +12,9 @@ package arquive;
  */
 public class ItemCabecalho {
 
+    /**
+     * Status do arquivo, 1 = válido, 2 = excluído
+     */
     private byte status;
 
     private int tamanhoNome;
