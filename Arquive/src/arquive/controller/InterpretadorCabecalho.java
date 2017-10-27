@@ -29,6 +29,97 @@ public class InterpretadorCabecalho {
 
     private static final Charset UTF8_CHARSET = Charset.forName("UTF-8");
 
+    /**
+     * Conjunto de bytes a ser interpretado
+     */
+    private final byte[] bytes;
+
+    /**
+     * Indicador da posição sendo analisada no memento pelo interpretador
+     */
+    private int posicaoAtual;
+
+    public InterpretadorCabecalho(byte[] bytes) {
+        assert bytes != null;
+
+        this.bytes = bytes;
+    }
+
+    /**
+     * Interpreta o próximo inteiro (quatro bytes) a partir da posição atual e
+     * avança o ponteiro
+     *
+     * @return
+     * @throws ParseException
+     */
+    private int interpretarInteiro() throws ParseException {
+        if (bytes.length < posicaoAtual + 4) {
+            throw new CorrompidoException("Fim de arquivo inesperado", posicaoAtual);
+        }
+        // Converter quatro bytes para inteiro
+        byte[] inteiroEmBytes = {
+            bytes[posicaoAtual + 0],
+            bytes[posicaoAtual + 1],
+            bytes[posicaoAtual + 2],
+            bytes[posicaoAtual + 3]
+        };
+
+        // Mover quatro bytes à frente
+        posicaoAtual += 4;
+
+        return converterBytesParaInteiro(inteiroEmBytes);
+    }
+
+    /**
+     * Interpreta uma string UTF8 (n bytes) a partir da posição atual e avança o
+     * ponteiro
+     *
+     * @return
+     * @throws ParseException
+     */
+    private String interpretarStringUTF8(int tamanho) throws ParseException {
+        if (bytes.length < posicaoAtual + tamanho) {
+            throw new CorrompidoException("Fim de arquivo inesperado", posicaoAtual);
+        }
+
+        byte[] stringEmBytes = new byte[tamanho];
+        for (int j = 0; j < tamanho; j++) {
+            stringEmBytes[j] = bytes[posicaoAtual + j];
+        }
+        String string = decodificarBytesUTF8(stringEmBytes);
+
+        // Mover n bytes à frente
+        posicaoAtual += tamanho;
+
+        return string;
+    }
+
+    /**
+     * Interpreta um conjunto de bytes e transformá-lo em um Cabecalho
+     *
+     * @return
+     * @throws ParseException
+     */
+    public Cabecalho interpretar() throws ParseException {
+        Cabecalho cabecalho = new Cabecalho();
+
+        // Interpretar itens do cabeçalho
+        for (posicaoAtual = 0; posicaoAtual < bytes.length; posicaoAtual++) {
+            if (bytes[posicaoAtual] == 0) {
+                // Fim do cabeçalho
+                break;
+            }
+
+            // Interpretar tamanho do nome do item
+            int tamanhoNome = interpretarInteiro();
+
+            // Interpretar nome do item
+            String nome = interpretarStringUTF8(tamanhoNome);
+        }
+
+        return cabecalho;
+    }
+
     private static String decodificarBytesUTF8(byte[] bytes) {
         return new String(bytes, UTF8_CHARSET);
     }
@@ -38,50 +129,4 @@ public class InterpretadorCabecalho {
 
         return ByteBuffer.wrap(bytes).getInt();
     }
-
-    /**
-     * Interpreta uma lista
-     *
-     * @param bytes
-     * @return
-     * @throws ParseException
-     */
-    public static Cabecalho interpretarBytesCabecalho(byte[] bytes) throws ParseException {
-        Cabecalho cabecalho = new Cabecalho();
-
-        // Interpretar itens do cabeçalho
-        for (int i = 0; i < bytes.length; i++) {
-            if (bytes[i] == 0) {
-                // Fim do cabeçalho
-                break;
-            }
-
-            // Interpretar tamanho do nome do item
-            if (bytes.length < i + 4) {
-                throw new CorrompidoException("Fim de arquivo inesperado", i);
-            }
-            byte[] tamanhoNomeBytes = {bytes[i + 0], bytes[i + 1], bytes[i + 2], bytes[i + 3]};
-            int tamanhoNome = converterBytesParaInteiro(tamanhoNomeBytes);
-
-            // Mover quatro bytes à frente
-            i += 4;
-
-            // Interpretar nome do item
-            if (bytes.length < i + tamanhoNome) {
-                throw new CorrompidoException("Fim de arquivo inesperado", i);
-            }
-            byte[] nomeBytes = new byte[tamanhoNome];
-            for (int j = 0; j < tamanhoNome; j++) {
-                nomeBytes[j] = bytes[i + j];
-            }
-            String nome = decodificarBytesUTF8(nomeBytes);
-
-            // Mover n bytes à frente
-            i += tamanhoNome;
-
-        }
-
-        return cabecalho;
-    }
-
 }
