@@ -1,27 +1,39 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Arquive
+ *
+ * Equipe desenvolvedora do sistema Arquive para Estrutura de Arquivos
+ * Universidade Estadual de Campinas - 2017
  */
 package arquive;
 
 /**
- * 
- * @author kelwin
+ * Descritor de um item do cabeçalho, o qual se refere à uma arquivo dentro do
+ * pacote
  */
-public class Cabecalho {
+public class ItemCabecalho {
+
     private byte status;
+
     private int tamanhoNome;
+
     private String nome;
+
     private int posicao;
+
     private int tamanhoArq;
 
-    public Cabecalho(byte status, int tamanhoNome, String nome, int posicao, int tamanhoArq) {
+    public ItemCabecalho(
+            byte status,
+            int tamanhoNome,
+            String nome,
+            int posicao,
+            int tamanhoArquivo
+    ) {
         this.status = status;
         this.tamanhoNome = tamanhoNome;
         this.nome = nome;
         this.posicao = posicao;
-        this.tamanhoArq = tamanhoArq;
+        this.tamanhoArq = tamanhoArquivo;
     }
 
     public byte getStatus() {
@@ -63,6 +75,5 @@ public class Cabecalho {
     public void setTamanhoArq(int tamanhoArq) {
         this.tamanhoArq = tamanhoArq;
     }
-    
-    
+
 }

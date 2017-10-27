@@ -1,7 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Arquive
+ *
+ * Equipe desenvolvedora do sistema Arquive para Estrutura de Arquivos
+ * Universidade Estadual de Campinas - 2017
  */
 package arquive;
 
@@ -9,10 +10,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-/**
- *
- * @author kelwi
- */
 public class TelaInicial extends javax.swing.JFrame {
 
     /**
@@ -29,7 +26,7 @@ public class TelaInicial extends javax.swing.JFrame {
             public void valueChanged(ListSelectionEvent e) {
                 ListSelectionModel k = (ListSelectionModel) e.getSource();
                 if (k.isSelectionEmpty()) {
-                    // sem seleção vazio
+                    // sem seleção - vazio
 
                     jButton2.setEnabled(false);
                     jButton4.setEnabled(false);
@@ -43,7 +40,7 @@ public class TelaInicial extends javax.swing.JFrame {
                     int maxIndex = k.getMaxSelectionIndex();
                     for (int i = minIndex; i <= maxIndex; i++) {
                         if (k.isSelectedIndex(i)) {
-                            // i ta selecionado
+                            // Item de índice i está selecionado
                         }
                     }
                 }
