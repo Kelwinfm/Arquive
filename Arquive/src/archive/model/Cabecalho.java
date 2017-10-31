@@ -14,6 +14,12 @@ import java.util.List;
  */
 public class Cabecalho {
 
+    /**
+     * Tamanho do cabeçalho em bytes. 8192 Equivale a dois clusters de 4096
+     * bytes
+     */
+    public static final int TAMANHO_CABECALHO = 8192;
+
     private final List<ItemCabecalho> itens = new ArrayList<>();
 
     public void adicionarItem(ItemCabecalho item) {

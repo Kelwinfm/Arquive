@@ -6,6 +6,7 @@
  */
 package archive.controller;
 
+import archive.exceptions.CabecalhoCorrompidoException;
 import archive.model.Cabecalho;
 import archive.model.ItemCabecalho;
 import java.nio.ByteBuffer;
@@ -16,19 +17,6 @@ import java.text.ParseException;
  * Responsável por interpretar bytes a fim de se obter um Cabecalho
  */
 public class InterpretadorCabecalho {
-
-    /**
-     * Classe utilizada para geração de exceções na interpretação do cabeçalho
-     */
-    private static class CorrompidoException extends ParseException {
-
-        public CorrompidoException(String message, int offset) {
-            super("Arquivo corrompido: " + message, offset);
-        }
-
-    }
-
-    private static final Charset UTF8_CHARSET = Charset.forName("UTF-8");
 
     /**
      * Conjunto de bytes a ser interpretado
@@ -78,7 +66,7 @@ public class InterpretadorCabecalho {
      * @return
      * @throws ParseException
      */
-    private String interpretarStringUTF8(int tamanho) throws ParseException {
+    private String interpretarStringUTF8(int tamanho) throws CabecalhoCorrompidoException {
         if (bytes.length < posicaoAtual + tamanho) {
             throw new CabecalhoCorrompidoException("Fim de arquivo inesperado", posicaoAtual);
         }
