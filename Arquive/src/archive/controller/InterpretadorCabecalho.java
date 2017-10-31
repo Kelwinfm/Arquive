@@ -4,10 +4,10 @@
  * Equipe desenvolvedora do sistema Arquive para Estrutura de Arquivos
  * Universidade Estadual de Campinas - 2017
  */
-package arquive.controller;
+package archive.controller;
 
-import arquive.model.Cabecalho;
-import arquive.model.ItemCabecalho;
+import archive.model.Cabecalho;
+import archive.model.ItemCabecalho;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.text.ParseException;
