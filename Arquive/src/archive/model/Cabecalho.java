@@ -4,7 +4,7 @@
  * Equipe desenvolvedora do sistema Arquive para Estrutura de Arquivos
  * Universidade Estadual de Campinas - 2017
  */
-package arquive.model;
+package archive.model;
 
 import java.util.ArrayList;
 import java.util.List;
