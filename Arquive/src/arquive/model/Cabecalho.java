@@ -20,4 +20,8 @@ public class Cabecalho {
         itens.add(item);
     }
 
+    public List<ItemCabecalho> getItens() {
+        return itens;
+    }
+
 }
