@@ -8,7 +8,10 @@ package archive.view;
 import archive.controller.ControladorArchive;
 import archive.exceptions.CabecalhoEsgotadoException;
 import archive.model.Archive;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -126,15 +129,19 @@ public class TelaInicial extends javax.swing.JFrame {
 
     private void criarNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_criarNovoActionPerformed
 
-        
+        Archive archive = null;
         try {
-            ControladorArchive.criarNovoArchive();
+            archive = ControladorArchive.criarNovoArchive();
         } catch (IOException | CabecalhoEsgotadoException ex) {
             JOptionPane.showMessageDialog(null, "Falha ao criar novo arquivo");
+            return;
         }
-        
-        ControladorArchive.abrirArchive(archive);
 
+        try {
+            ControladorArchive.abrirArchive(archive);
+        } catch (FileNotFoundException ex) {
+            JOptionPane.showMessageDialog(null, "Falha ao abrir arquivo criado");
+        }
     }//GEN-LAST:event_criarNovoActionPerformed
 
     /**
