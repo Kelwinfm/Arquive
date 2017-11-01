@@ -6,23 +6,35 @@
  */
 package archive.dao;
 
+import archive.controller.CompiladorCabecalho;
+import archive.controller.InterpretadorCabecalho;
+import archive.exceptions.CabecalhoCorrompidoException;
+import archive.exceptions.CabecalhoEsgotadoException;
 import archive.model.Cabecalho;
-import java.nio.file.Path;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 
 /**
  * Responsável por carregar e atualizar o cabeçalho de um archive
  */
 public class CabecalhoDAO extends AbstractDAO {
 
-    public static Cabecalho carregarCabecalho(Path caminho) {
-        
-        byte[] bytes = lerBytes(caminho, 0, 00000);
-        
-        return new Cabecalho();
+    public static Cabecalho carregarCabecalho(RandomAccessFile arquivo)
+            throws CabecalhoCorrompidoException, IOException {
+        byte[] bytes = lerBytes(arquivo, 0, Cabecalho.TAMANHO_CABECALHO);
+
+        InterpretadorCabecalho interpretador = new InterpretadorCabecalho(bytes);
+
+        return interpretador.interpretar();
     }
 
-    public static void gravarCabecalho(Path caminho) {
+    public static void gravarCabecalho(Cabecalho cabecalho, RandomAccessFile arquivo)
+            throws CabecalhoEsgotadoException, IOException {
+        CompiladorCabecalho compilador = new CompiladorCabecalho(cabecalho);
 
+        byte[] bytes = compilador.compilar();
+
+        gravarBytes(arquivo, 0, bytes);
     }
 
 }

@@ -18,6 +18,8 @@ public class TelaGerenciamento extends javax.swing.JFrame {
     public TelaGerenciamento() {
         initComponents();
 
+        setLocationRelativeTo(null);
+
         //lista.getSelectedValue();
         //lista.setListData(listData);
         //lista.setEnabled(true);

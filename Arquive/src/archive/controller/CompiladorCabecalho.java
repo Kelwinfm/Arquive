@@ -11,6 +11,7 @@ import archive.model.Cabecalho;
 import archive.model.ItemCabecalho;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 /**
  * Responsável por transformar um Cabecalho em um conjunto de bytes
@@ -27,11 +28,6 @@ public class CompiladorCabecalho {
      * compor o cabeçalho compilado
      */
     private final byte[] bytes = new byte[Cabecalho.TAMANHO_CABECALHO];
-
-    /**
-     * Flag para indicar se foi já compilado
-     */
-    private boolean compilado = false;
 
     /**
      * Indicador da posição atual dentro do array de bytes
@@ -84,10 +80,8 @@ public class CompiladorCabecalho {
      * @throws CabecalhoEsgotadoException
      */
     public byte[] compilar() throws CabecalhoEsgotadoException {
-        if (compilado) {
-            return bytes;
-        }
-        compilado = true;
+        Arrays.fill(bytes, (byte) 0);
+        posicaoAtual = 0;
 
         for (ItemCabecalho item : cabecalho.getItens()) {
             // Concatenar status ao vetor de bytes

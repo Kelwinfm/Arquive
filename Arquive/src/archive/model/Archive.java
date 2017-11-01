@@ -6,7 +6,7 @@
  */
 package archive.model;
 
-import java.nio.file.Path;
+import java.io.File;
 
 /**
  * Descritor de um archive contendo cabeçalho e gerenciador da parte binária
@@ -15,15 +15,15 @@ public class Archive {
 
     private final Cabecalho cabecalho;
 
-    private final Path caminho;
+    private final File arquivo;
 
-    public Archive(Cabecalho cabecalho, Path caminho) {
+    public Archive(Cabecalho cabecalho, File arquivo) {
         this.cabecalho = cabecalho;
-        this.caminho = caminho;
+        this.arquivo = arquivo;
     }
 
-    public Path obterCaminho() {
-        return caminho;
+    public File getArquivo() {
+        return arquivo;
     }
 
 }

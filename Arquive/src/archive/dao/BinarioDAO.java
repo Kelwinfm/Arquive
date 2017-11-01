@@ -12,12 +12,11 @@ import archive.model.Archive;
  * Responsável por carregar e atualizar o conteúdo binário de um archive
  */
 public class BinarioDAO extends AbstractDAO {
-    
-    public static byte[] lerArquivo(Archive arquive, int posicao, int tamanho){
-        
+
+    public static byte[] lerArquivo(Archive arquive, int posicao, int tamanho) {
+
         // TODO
-        
         return null;
     }
-    
+
 }

@@ -5,6 +5,12 @@
  */
 package archive.view;
 
+import archive.controller.ControladorArchive;
+import archive.exceptions.CabecalhoEsgotadoException;
+import archive.model.Archive;
+import java.io.IOException;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author s187064
@@ -16,6 +22,8 @@ public class TelaInicial extends javax.swing.JFrame {
      */
     public TelaInicial() {
         initComponents();
+
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -31,6 +39,7 @@ public class TelaInicial extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         abrirExistente = new javax.swing.JButton();
         criarNovo = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -59,6 +68,9 @@ public class TelaInicial extends javax.swing.JFrame {
             }
         });
 
+        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel2.setText("Escolha uma opção");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -73,13 +85,19 @@ public class TelaInicial extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 94, Short.MAX_VALUE)
                 .addComponent(abrirExistente, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(74, 74, 74))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(222, 222, 222)
+                .addComponent(jLabel2)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(36, 36, 36)
                 .addComponent(jLabel1)
-                .addGap(57, 57, 57)
+                .addGap(17, 17, 17)
+                .addComponent(jLabel2)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(abrirExistente, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(criarNovo, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -107,7 +125,16 @@ public class TelaInicial extends javax.swing.JFrame {
     }//GEN-LAST:event_abrirExistenteActionPerformed
 
     private void criarNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_criarNovoActionPerformed
-        // TODO add your handling code here:
+
+        
+        try {
+            ControladorArchive.criarNovoArchive();
+        } catch (IOException | CabecalhoEsgotadoException ex) {
+            JOptionPane.showMessageDialog(null, "Falha ao criar novo arquivo");
+        }
+        
+        ControladorArchive.abrirArchive(archive);
+
     }//GEN-LAST:event_criarNovoActionPerformed
 
     /**
@@ -150,6 +177,7 @@ public class TelaInicial extends javax.swing.JFrame {
     private javax.swing.JButton abrirExistente;
     private javax.swing.JButton criarNovo;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 }
