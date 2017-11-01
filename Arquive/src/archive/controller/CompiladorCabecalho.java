@@ -4,24 +4,19 @@
  * Equipe desenvolvedora do sistema Arquive para Estrutura de Arquivos
  * Universidade Estadual de Campinas - 2017
  */
-package arquive.controller;
+package archive.controller;
 
-import arquive.exceptions.CabecalhoEsgotadoException;
-import arquive.model.Cabecalho;
-import arquive.model.ItemCabecalho;
+import archive.exceptions.CabecalhoEsgotadoException;
+import archive.model.Cabecalho;
+import archive.model.ItemCabecalho;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 /**
  * Responsável por transformar um Cabecalho em um conjunto de bytes
  */
 public class CompiladorCabecalho {
-
-    /**
-     * Tamanho do cabeçalho em bytes. 8192 Equivale a dois clusters de 4096
-     * bytes
-     */
-    public static final int TAMANHO_CABECALHO = 8192;
 
     /**
      * Cabeçalho a ser compilado
@@ -32,12 +27,7 @@ public class CompiladorCabecalho {
      * Array de bytes inicialmente preenchido com zeros (automaticamente). Irá
      * compor o cabeçalho compilado
      */
-    private final byte[] bytes = new byte[TAMANHO_CABECALHO];
-
-    /**
-     * Flag para indicar se foi já compilado
-     */
-    private boolean compilado = false;
+    private final byte[] bytes = new byte[Cabecalho.TAMANHO_CABECALHO];
 
     /**
      * Indicador da posição atual dentro do array de bytes
@@ -90,10 +80,8 @@ public class CompiladorCabecalho {
      * @throws CabecalhoEsgotadoException
      */
     public byte[] compilar() throws CabecalhoEsgotadoException {
-        if (compilado) {
-            return bytes;
-        }
-        compilado = true;
+        Arrays.fill(bytes, (byte) 0);
+        posicaoAtual = 0;
 
         for (ItemCabecalho item : cabecalho.getItens()) {
             // Concatenar status ao vetor de bytes
