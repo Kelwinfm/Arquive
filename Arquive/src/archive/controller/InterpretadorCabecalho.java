@@ -4,13 +4,14 @@
  * Equipe desenvolvedora do sistema Arquive para Estrutura de Arquivos
  * Universidade Estadual de Campinas - 2017
  */
-package arquive.controller;
+package archive.controller;
 
-import arquive.exceptions.CabecalhoCorrompidoException;
-import arquive.model.Cabecalho;
-import arquive.model.ItemCabecalho;
+import archive.exceptions.CabecalhoCorrompidoException;
+import archive.model.Cabecalho;
+import archive.model.ItemCabecalho;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.text.ParseException;
 
 /**
  * Responsável por interpretar bytes a fim de se obter um Cabecalho
@@ -63,7 +64,7 @@ public class InterpretadorCabecalho {
      * ponteiro
      *
      * @return
-     * @throws CabecalhoCorrompidoException
+     * @throws ParseException
      */
     private String interpretarStringUTF8(int tamanho) throws CabecalhoCorrompidoException {
         if (bytes.length < posicaoAtual + tamanho) {
