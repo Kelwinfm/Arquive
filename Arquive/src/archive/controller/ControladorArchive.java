@@ -6,15 +6,16 @@
  */
 package archive.controller;
 
+import archive.dao.ArchiveDAO;
 import archive.dao.BinarioDAO;
 import archive.dao.CabecalhoDAO;
+import archive.exceptions.CabecalhoCorrompidoException;
 import archive.exceptions.CabecalhoEsgotadoException;
 import archive.model.Archive;
 import archive.model.Arquivo;
 import archive.model.Cabecalho;
 import archive.model.ItemCabecalho;
 import archive.model.ItemCabecalho.Status;
-import archive.view.ConfirmadorDeSubstituicao;
 import archive.view.TelaGerenciamento;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -68,23 +69,18 @@ public class ControladorArchive {
      * Abre um archive no gerenciador de arquivos. Retorna verdadeiro caso o
      * arquivo seja aberto no gerenciador
      *
-     * @param archive
+     * @param file
      * @return Verdadeiro caso o archive seja aberto no gerenciador
      * @throws FileNotFoundException
      */
-    public static boolean abrirArchive(Archive archive) throws FileNotFoundException {
-        // Verificar se arquivo existe
-        if (archive.getArquivo().exists()) {
-            ConfirmadorDeSubstituicao confirmador = new ConfirmadorDeSubstituicao();
+    public static boolean abrirArchive(File file)
+            throws FileNotFoundException, CabecalhoCorrompidoException, IOException {
+        acessoArquivoAberto = new RandomAccessFile(file, "rw");
 
-            if (confirmador.verificarConfirmacao() == false) {
-                // O usuário deseja cancelar a operação abrir achive
-                return false;
-            }
-        }
+        // Carregar cabeçalho do archive
+        Cabecalho cabecalho = CabecalhoDAO.carregarCabecalho(acessoArquivoAberto);
 
-        archiveAberto = archive;
-        acessoArquivoAberto = new RandomAccessFile(archive.getArquivo(), "rw");
+        archiveAberto = new Archive(cabecalho, file);
 
         // Exibir tela de gerenciamento
         TelaGerenciamento telaGerenciamento = new TelaGerenciamento(archiveAberto);
@@ -214,7 +210,7 @@ public class ControladorArchive {
      *
      * @param nome Nome do arquivo a ser apagado
      * @throws IOException
-     * @throws archive.exceptions.CabecalhoEsgotadoException
+     * @throws CabecalhoEsgotadoException
      */
     public static void apagarArquivo(String nome)
             throws IOException, CabecalhoEsgotadoException {
@@ -228,6 +224,12 @@ public class ControladorArchive {
         for (ItemCabecalho itemCabecalho : cabecalho.getItens()) {
             if (itemCabecalho.getNome().equals(nome)) {
                 itemCabecalho.setStatus(Status.Excluido);
+
+                // Verificar posição física no archive
+                if (itemCabecalho == cabecalho.getItemUltimoArquivo()) {
+                    // O arquivo ocupa última posição
+                    ArchiveDAO.removerArquivoDoFinal(acessoArquivoAberto, itemCabecalho);
+                }
             }
         }
 
