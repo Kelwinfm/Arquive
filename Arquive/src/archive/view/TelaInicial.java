@@ -1,7 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Arquive
+ *
+ * Equipe desenvolvedora do sistema Arquive para Estrutura de Arquivos
+ * Universidade Estadual de Campinas - 2017
  */
 package archive.view;
 
@@ -12,14 +13,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import javax.swing.JOptionPane;
 
-/**
- *
- * @author s187064
- */
 public class TelaInicial extends javax.swing.JFrame {
 
     /**
-     * Creates new form TelaIniciall
+     * Creates new form TelaInicial
      */
     public TelaInicial() {
         initComponents();
@@ -126,8 +123,7 @@ public class TelaInicial extends javax.swing.JFrame {
     }//GEN-LAST:event_abrirExistenteActionPerformed
 
     private void criarNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_criarNovoActionPerformed
-
-        Archive archive = null;
+        Archive archive;
         try {
             archive = ControladorArchive.criarNovoArchive();
         } catch (IOException | CabecalhoEsgotadoException ex) {
@@ -140,6 +136,8 @@ public class TelaInicial extends javax.swing.JFrame {
         } catch (FileNotFoundException ex) {
             JOptionPane.showMessageDialog(null, "Falha ao abrir arquivo criado");
         }
+
+        dispose();
     }//GEN-LAST:event_criarNovoActionPerformed
 
     /**
