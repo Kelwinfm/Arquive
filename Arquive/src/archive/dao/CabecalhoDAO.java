@@ -28,7 +28,7 @@ public class CabecalhoDAO extends AbstractDAO {
         return interpretador.interpretar();
     }
 
-    public static void gravarCabecalho(Cabecalho cabecalho, RandomAccessFile arquivo)
+    public static void gravarCabecalho(RandomAccessFile arquivo, Cabecalho cabecalho)
             throws CabecalhoEsgotadoException, IOException {
         CompiladorCabecalho compilador = new CompiladorCabecalho(cabecalho);
 
