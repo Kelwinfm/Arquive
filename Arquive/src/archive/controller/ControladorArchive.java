@@ -6,15 +6,18 @@
  */
 package archive.controller;
 
+import archive.dao.BinarioDAO;
 import archive.dao.CabecalhoDAO;
 import archive.exceptions.CabecalhoEsgotadoException;
 import archive.model.Archive;
+import archive.model.Arquivo;
 import archive.model.Cabecalho;
+import archive.model.ItemCabecalho;
+import archive.model.ItemCabecalho.Status;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.file.Path;
 import javax.swing.JFileChooser;
 
 /**
@@ -59,8 +62,69 @@ public class ControladorArchive {
         acessoArquivoAberto = null;
     }
 
-    public static void salvarArchive(Archive archive) {
-        
+    /**
+     * Inserir arquivo no Archive atualmente aberto na sessão
+     *
+     * @param arquivo
+     * @throws IOException
+     * @throws CabecalhoEsgotadoException
+     */
+    public static void inserirArquivo(Arquivo arquivo) throws IOException, CabecalhoEsgotadoException {
+        if (archiveAberto == null || acessoArquivoAberto == null) {
+            return;
+        }
+
+        Cabecalho cabecalho = archiveAberto.getCabecalho();
+
+        // Posição onde o conteúdo do arquivo será gravado
+        int posicao;
+
+        if (cabecalho.getItens().isEmpty()) {
+            posicao = Cabecalho.TAMANHO_CABECALHO;
+        } else {
+            // Localizar lacuna disponível
+            // First fit (primeiro encaixe)
+            ItemCabecalho lacuna = null;
+            for (ItemCabecalho i : cabecalho.getItens()) {
+                if (i.getStatus() == Status.Excluido && i.getTamanho() >= arquivo.getTamanho()) {
+                    lacuna = i;
+                    break;
+                }
+            }
+
+            // Se não houver lacuna disponível
+            ItemCabecalho ultimoArquivo = cabecalho.getItemUltimoArquivo();
+            if (lacuna == null) {
+                // Obter posição do final do archive
+                posicao = ultimoArquivo.getPosicao() + ultimoArquivo.getTamanho();
+            } else {
+                // Obter posição da lacuna
+                posicao = lacuna.getPosicao();
+
+                // Atualizar cabecalho
+                if (lacuna.getTamanho() == arquivo.getTamanho() || lacuna == ultimoArquivo) {
+                    // Remover lacuna (arquivo apagado) do cabeçalho
+                    cabecalho.removerItem(lacuna);
+                } else {
+                    // Redimensionar e reposicionar lacuna
+                    lacuna.setTamanho(lacuna.getTamanho() - arquivo.getTamanho());
+                    lacuna.setPosicao(lacuna.getPosicao() + arquivo.getTamanho());
+                }
+            }
+        }
+
+        // Inserir conteúdo binário no archive
+        BinarioDAO.gravarArquivo(archiveAberto, acessoArquivoAberto, arquivo, posicao);
+
+        // Inserir no cabeçalho
+        cabecalho.adicionarItem(new ItemCabecalho(
+                Status.Valido,
+                arquivo.getNome(), posicao, arquivo.getTamanho()
+        ));
+
+        // Gravar cabeçalho no archive
+        CabecalhoDAO.gravarCabecalho(cabecalho, acessoArquivoAberto);
+
     }
 
 }
