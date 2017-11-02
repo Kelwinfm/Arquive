@@ -6,9 +6,28 @@
  */
 package archive.dao;
 
+import archive.model.ItemCabecalho;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+
 /**
  * Responsável por gerenciar um archive físico
  */
 public class ArchiveDAO extends AbstractDAO {
+
+    /**
+     * Remover arquivo fisicamente do archive
+     *
+     * @param acessoArchive
+     * @param descricaoArquivo
+     * @throws IOException
+     */
+    public static void removerArquivoDoFinal(
+            RandomAccessFile acessoArchive, ItemCabecalho descricaoArquivo
+    ) throws IOException {
+        acessoArchive.setLength(
+                acessoArchive.length() - descricaoArquivo.getTamanho()
+        );
+    }
 
 }
