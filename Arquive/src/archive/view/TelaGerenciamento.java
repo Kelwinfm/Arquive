@@ -6,23 +6,38 @@
  */
 package archive.view;
 
+import archive.model.Archive;
+import archive.model.Cabecalho;
+import archive.model.ItemCabecalho;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 public class TelaGerenciamento extends javax.swing.JFrame {
 
+    private final Archive archive;
+
     /**
      * Creates new form TelaInicial
+     *
+     * @param archive
      */
-    public TelaGerenciamento() {
+    public TelaGerenciamento(Archive archive) {
         initComponents();
+
+        this.archive = archive;
 
         setLocationRelativeTo(null);
 
+        inicializar();
+    }
+
+    private void inicializar() {
+        // Adicionar listener de eventos à lista
         //lista.getSelectedValue();
         //lista.setListData(listData);
-        //lista.setEnabled(true);
         lista.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -48,6 +63,26 @@ public class TelaGerenciamento extends javax.swing.JFrame {
                 }
             }
         });
+
+        atualizarListaArquivos();
+    }
+
+    public void atualizarListaArquivos() {
+        Cabecalho cabecalho = archive.getCabecalho();
+
+        List<String> conteudoLista = new ArrayList<>();
+
+        for (ItemCabecalho item : cabecalho.getItens()) {
+            conteudoLista.add(item.getNome() + "\t" + item.getTamanho());
+        }
+
+        String[] arrayItens = new String[conteudoLista.size()];
+        arrayItens = conteudoLista.toArray(arrayItens);
+        lista.setListData(arrayItens);
+    }
+
+    public Archive getArchive() {
+        return archive;
     }
 
     /**
