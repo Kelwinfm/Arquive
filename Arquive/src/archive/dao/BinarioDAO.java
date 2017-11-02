@@ -8,6 +8,7 @@ package archive.dao;
 
 import archive.model.Archive;
 import archive.model.Arquivo;
+import archive.model.ItemCabecalho;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
@@ -19,20 +20,19 @@ public class BinarioDAO extends AbstractDAO {
     public static void gravarArquivo(
             Archive archive, RandomAccessFile acessoArchive,
             Arquivo arquivo,
-            int posicao
+            ItemCabecalho descricao
     ) throws IOException {
-        acessoArchive.seek(posicao);
+        acessoArchive.seek(descricao.getPosicao());
         acessoArchive.write(arquivo.getConteudo());
     }
 
     public static Arquivo lerArquivo(
-            Archive archive, RandomAccessFile acessoArchive,
-            String nome, int posicao, int tamanho
+            Archive archive, RandomAccessFile acessoArchive, ItemCabecalho descricao
     ) throws IOException {
-        acessoArchive.seek(posicao);
-        byte[] bytes = lerBytes(acessoArchive, posicao, tamanho);
+        acessoArchive.seek(descricao.getPosicao());
+        byte[] bytes = lerBytes(acessoArchive, descricao.getPosicao(), descricao.getTamanho());
 
-        return new Arquivo(nome, bytes);
+        return new Arquivo(descricao.getNome(), bytes);
     }
 
 }
