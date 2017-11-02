@@ -9,6 +9,7 @@ package archive.controller;
 import archive.exceptions.CabecalhoCorrompidoException;
 import archive.model.Cabecalho;
 import archive.model.ItemCabecalho;
+import archive.model.ItemCabecalho.Status;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.text.ParseException;
@@ -100,7 +101,7 @@ public class InterpretadorCabecalho {
             }
 
             // Status do item
-            byte status = bytes[posicaoAtual];
+            byte statusByte = bytes[posicaoAtual];
 
             // Avançar um byte
             posicaoAtual++;
@@ -116,6 +117,16 @@ public class InterpretadorCabecalho {
 
             // Interpretar tamanho do arquivo
             int tamanhoArquivo = interpretarInteiro();
+
+            ItemCabecalho.Status status = Status.Excluido;
+            switch (statusByte) {
+                case 1:
+                    status = Status.Valido;
+                    break;
+                case 2:
+                    status = Status.Excluido;
+                    break;
+            }
 
             // Adicionar este novo item ao cabeçalho
             ItemCabecalho item = new ItemCabecalho(

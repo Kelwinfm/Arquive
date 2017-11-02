@@ -26,4 +26,8 @@ public class Archive {
         return arquivo;
     }
 
+    public Cabecalho getCabecalho() {
+        return cabecalho;
+    }
+
 }

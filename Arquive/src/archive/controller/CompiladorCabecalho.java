@@ -9,6 +9,7 @@ package archive.controller;
 import archive.exceptions.CabecalhoEsgotadoException;
 import archive.model.Cabecalho;
 import archive.model.ItemCabecalho;
+import archive.model.ItemCabecalho.Status;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -85,8 +86,18 @@ public class CompiladorCabecalho {
 
         for (ItemCabecalho item : cabecalho.getItens()) {
             // Concatenar status ao vetor de bytes
-            byte status = item.getStatus();
-            bytes[posicaoAtual] = status;
+            Status status = item.getStatus();
+            byte statusByte = 0;
+            switch (status) {
+                case Valido:
+                    statusByte = 1;
+                    break;
+                case Excluido:
+                    statusByte = 2;
+                    break;
+            }
+
+            bytes[posicaoAtual] = statusByte;
 
             // Avançar um byte
             posicaoAtual++;
@@ -104,7 +115,7 @@ public class CompiladorCabecalho {
             concatenarInteiro(posicaoInicio);
 
             // Concatenar tamanho do arquivo
-            int tamanho = item.getTamanhoArquivo();
+            int tamanho = item.getTamanho();
             concatenarInteiro(tamanho);
         }
 
