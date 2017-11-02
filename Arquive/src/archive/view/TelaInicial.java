@@ -132,12 +132,12 @@ public class TelaInicial extends javax.swing.JFrame {
         }
 
         try {
-            ControladorArchive.abrirArchive(archive);
+            if (ControladorArchive.abrirArchive(archive) == true) {
+                dispose();
+            }
         } catch (FileNotFoundException ex) {
             JOptionPane.showMessageDialog(null, "Falha ao abrir arquivo criado");
         }
-
-        dispose();
     }//GEN-LAST:event_criarNovoActionPerformed
 
     /**
