@@ -16,14 +16,13 @@ import archive.model.ItemCabecalho;
 import archive.model.ItemCabecalho.Status;
 import archive.view.ConfirmadorDeSubstituicao;
 import archive.view.TelaGerenciamento;
-import archive.view.TelaInicial;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JFileChooser;
 
 /**
  * Responsável por interpretar bytes a fim de se obter um Cabecalho
@@ -36,16 +35,25 @@ public class ControladorArchive {
 
     private static Archive archiveAberto = null;
 
-    public static Archive criarNovoArchive() throws IOException, CabecalhoEsgotadoException {
-        JFileChooser selecionador = new JFileChooser();
-        selecionador.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        selecionador.showSaveDialog(null);
-
-        File arquivo = selecionador.getSelectedFile();
+    /**
+     *
+     * @return Archive criado
+     * @throws IOException
+     * @throws CabecalhoEsgotadoException
+     */
+    public static Archive criarNovoArchive(File arquivo)
+            throws IOException, CabecalhoEsgotadoException {
         if (!arquivo.toPath().toString().endsWith(EXTENSAO)) {
             arquivo = new File(arquivo.toPath() + EXTENSAO);
         }
 
+        // Limpar arquivo
+        if (arquivo.exists()) {
+            arquivo.delete();
+        }
+        arquivo.createNewFile();
+
+        // Criar cabeçalho vazio e adicionar ao arquivo
         Cabecalho cabecalho = new Cabecalho();
         Archive archive = new Archive(cabecalho, arquivo);
 
@@ -98,15 +106,19 @@ public class ControladorArchive {
     /**
      * Inserir arquivo no Archive atualmente aberto na sessão
      *
-     * @param arquivo
+     * @param file
      * @throws IOException
      * @throws CabecalhoEsgotadoException
      */
-    public static void inserirArquivo(Arquivo arquivo) throws IOException, CabecalhoEsgotadoException {
+    public static void inserirArquivo(File file) throws IOException, CabecalhoEsgotadoException {
         if (archiveAberto == null || acessoArquivoAberto == null) {
             assert false : "Nenhum arquivo aberto na sessão";
             return;
         }
+
+        byte[] bytesArquivo = Files.readAllBytes(file.toPath());
+
+        Arquivo arquivo = new Arquivo(file.getName(), bytesArquivo);
 
         Cabecalho cabecalho = archiveAberto.getCabecalho();
 
