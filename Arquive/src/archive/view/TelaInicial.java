@@ -10,8 +10,6 @@ import archive.exceptions.CabecalhoEsgotadoException;
 import archive.model.Archive;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
