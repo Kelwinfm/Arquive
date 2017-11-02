@@ -9,8 +9,10 @@ package archive.view;
 import archive.controller.ControladorArchive;
 import archive.exceptions.CabecalhoEsgotadoException;
 import archive.model.Archive;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 public class TelaInicial extends javax.swing.JFrame {
@@ -123,9 +125,25 @@ public class TelaInicial extends javax.swing.JFrame {
     }//GEN-LAST:event_abrirExistenteActionPerformed
 
     private void criarNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_criarNovoActionPerformed
+        JFileChooser selecionador = new JFileChooser();
+        selecionador.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        selecionador.showSaveDialog(null);
+
+        File arquivo = selecionador.getSelectedFile();
+
+        if (arquivo == null) {
+            // Nenhum arquivo selecionado
+            return;
+        }
+
         Archive archive;
+
         try {
-            archive = ControladorArchive.criarNovoArchive();
+            archive = ControladorArchive.criarNovoArchive(arquivo);
+
+            if (archive == null) {
+                return;
+            }
         } catch (IOException | CabecalhoEsgotadoException ex) {
             JOptionPane.showMessageDialog(null, "Falha ao criar novo arquivo");
             return;
