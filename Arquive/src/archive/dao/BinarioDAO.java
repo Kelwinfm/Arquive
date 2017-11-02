@@ -15,7 +15,7 @@ import java.io.RandomAccessFile;
 /**
  * Responsável por carregar e atualizar o conteúdo binário de um archive
  */
-public class BinarioDAO extends AbstractDAO {
+public class BinarioDAO extends GenericDAO {
 
     public static void gravarArquivo(
             Archive archive, RandomAccessFile acessoArchive,

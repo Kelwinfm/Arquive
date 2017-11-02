@@ -17,7 +17,7 @@ import java.io.RandomAccessFile;
 /**
  * Responsável por carregar e atualizar o cabeçalho de um archive
  */
-public class CabecalhoDAO extends AbstractDAO {
+public class CabecalhoDAO extends GenericDAO {
 
     public static Cabecalho carregarCabecalho(RandomAccessFile arquivo)
             throws CabecalhoCorrompidoException, IOException {
