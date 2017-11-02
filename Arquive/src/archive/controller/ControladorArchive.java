@@ -14,6 +14,9 @@ import archive.model.Arquivo;
 import archive.model.Cabecalho;
 import archive.model.ItemCabecalho;
 import archive.model.ItemCabecalho.Status;
+import archive.view.ConfirmadorDeSubstituicao;
+import archive.view.TelaGerenciamento;
+import archive.view.TelaInicial;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -54,8 +57,25 @@ public class ControladorArchive {
     }
 
     public static void abrirArchive(Archive archive) throws FileNotFoundException {
+        // Verificar se arquivo existe
+        if (archive.getArquivo().exists()) {
+            ConfirmadorDeSubstituicao confirmador = new ConfirmadorDeSubstituicao();
+
+            if (confirmador.verificarConfirmacao() == false) {
+                // O usuário deseja cancelar a operação abrir achive
+                // Mostar tela inicial
+                TelaInicial telaInicial = new TelaInicial();
+                telaInicial.setVisible(true);
+                return;
+            }
+        }
+
         archiveAberto = archive;
         acessoArquivoAberto = new RandomAccessFile(archive.getArquivo(), "rw");
+
+        // Exibir tela de gerenciamento
+        TelaGerenciamento telaGerenciamento = new TelaGerenciamento(archiveAberto);
+        telaGerenciamento.setVisible(true);
     }
 
     public static void fecharSessao() throws IOException {
