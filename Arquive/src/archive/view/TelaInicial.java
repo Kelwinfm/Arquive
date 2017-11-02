@@ -7,11 +7,14 @@
 package archive.view;
 
 import archive.controller.ControladorArchive;
+import archive.exceptions.CabecalhoCorrompidoException;
 import archive.exceptions.CabecalhoEsgotadoException;
 import archive.model.Archive;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -121,7 +124,30 @@ public class TelaInicial extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void abrirExistenteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_abrirExistenteActionPerformed
-        // TODO add your handling code here:
+
+        JFileChooser selecionador = new JFileChooser();
+        selecionador.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        selecionador.showOpenDialog(null);
+
+        File arquivo = selecionador.getSelectedFile();
+
+        if (arquivo == null) {
+            // Nenhum arquivo selecionado
+            return;
+        }
+
+        try {
+            if (ControladorArchive.abrirArchive(arquivo) == true) {
+                dispose();
+            }
+        } catch (FileNotFoundException ex) {
+            JOptionPane.showMessageDialog(null, "Arquivo não encontrado");
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, "Falha ao abrir o arquivo");
+        } catch (CabecalhoCorrompidoException ex) {
+            JOptionPane.showMessageDialog(null, "Arquivo corrompido");
+        }
+
     }//GEN-LAST:event_abrirExistenteActionPerformed
 
     private void criarNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_criarNovoActionPerformed
@@ -136,10 +162,8 @@ public class TelaInicial extends javax.swing.JFrame {
             return;
         }
 
-        Archive archive;
-
         try {
-            archive = ControladorArchive.criarNovoArchive(arquivo);
+            Archive archive = ControladorArchive.criarNovoArchive(arquivo);
 
             if (archive == null) {
                 return;
@@ -150,11 +174,20 @@ public class TelaInicial extends javax.swing.JFrame {
         }
 
         try {
-            if (ControladorArchive.abrirArchive(archive) == true) {
+            if (ControladorArchive.abrirArchive(arquivo) == true) {
                 dispose();
             }
         } catch (FileNotFoundException ex) {
+            JOptionPane.showMessageDialog(
+                    null, "Não foi possível encontrar o arquivo criado. "
+                    + "Ele pode ter sido removido por outro processo"
+            );
+        } catch (IOException ex) {
             JOptionPane.showMessageDialog(null, "Falha ao abrir arquivo criado");
+        } catch (CabecalhoCorrompidoException ex) {
+            JOptionPane.showMessageDialog(
+                    null, "Houve um problema na criação do arquivo"
+            );
         }
     }//GEN-LAST:event_criarNovoActionPerformed
 
