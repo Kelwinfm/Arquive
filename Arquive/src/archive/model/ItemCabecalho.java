@@ -12,34 +12,39 @@ package archive.model;
  */
 public class ItemCabecalho {
 
+    public static enum Status {
+        Valido,
+        Excluido
+    }
+
     /**
-     * Status do arquivo, 1 = válido, 2 = excluído
+     * Status do arquivo
      */
-    private byte status;
+    private Status status;
 
     private String nome;
 
     private int posicao;
 
-    private int tamanhoArquivo;
+    private int tamanho;
 
     public ItemCabecalho(
-            byte status,
+            Status status,
             String nome,
             int posicao,
-            int tamanhoArquivo
+            int tamanho
     ) {
         this.status = status;
         this.nome = nome;
         this.posicao = posicao;
-        this.tamanhoArquivo = tamanhoArquivo;
+        this.tamanho = tamanho;
     }
 
-    public byte getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(byte status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
@@ -59,12 +64,12 @@ public class ItemCabecalho {
         this.posicao = posicao;
     }
 
-    public int getTamanhoArquivo() {
-        return tamanhoArquivo;
+    public int getTamanho() {
+        return tamanho;
     }
 
-    public void setTamanhoArquivo(int tamanhoArquivo) {
-        this.tamanhoArquivo = tamanhoArquivo;
+    public void setTamanho(int tamanho) {
+        this.tamanho = tamanho;
     }
 
 }
