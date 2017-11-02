@@ -56,17 +56,22 @@ public class ControladorArchive {
         return archive;
     }
 
-    public static void abrirArchive(Archive archive) throws FileNotFoundException {
+    /**
+     * Abre um archive no gerenciador de arquivos. Retorna verdadeiro caso o
+     * arquivo seja aberto no gerenciador
+     *
+     * @param archive
+     * @return Verdadeiro caso o archive seja aberto no gerenciador
+     * @throws FileNotFoundException
+     */
+    public static boolean abrirArchive(Archive archive) throws FileNotFoundException {
         // Verificar se arquivo existe
         if (archive.getArquivo().exists()) {
             ConfirmadorDeSubstituicao confirmador = new ConfirmadorDeSubstituicao();
 
             if (confirmador.verificarConfirmacao() == false) {
                 // O usuário deseja cancelar a operação abrir achive
-                // Mostar tela inicial
-                TelaInicial telaInicial = new TelaInicial();
-                telaInicial.setVisible(true);
-                return;
+                return false;
             }
         }
 
@@ -76,6 +81,8 @@ public class ControladorArchive {
         // Exibir tela de gerenciamento
         TelaGerenciamento telaGerenciamento = new TelaGerenciamento(archiveAberto);
         telaGerenciamento.setVisible(true);
+
+        return true;
     }
 
     public static void fecharSessao() throws IOException {
