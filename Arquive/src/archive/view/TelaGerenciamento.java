@@ -53,25 +53,26 @@ public class TelaGerenciamento extends javax.swing.JFrame {
         lista.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent event) {
-                if (event.getFirstIndex() == event.getLastIndex()) {
-                    // sem seleção - vazio
+                boolean possuiSelecao = false;
 
+                // Encontrar índices selecionados
+                int minIndex = event.getFirstIndex();
+                int maxIndex = event.getLastIndex();
+
+                for (int i = minIndex; i <= maxIndex; i++) {
+                    if (lista.isSelectedIndex(i)) {
+                        // Item de índice i está selecionado
+                        possuiSelecao = true;
+                    }
+                }
+
+                if (!possuiSelecao) {
+                    // Sem seleção
                     jButton2.setEnabled(false);
                     jButton4.setEnabled(false);
-
                 } else {
-                    // Find out which indexes are selected.
                     jButton2.setEnabled(true);
                     jButton4.setEnabled(true);
-
-                    int minIndex = event.getFirstIndex();
-                    int maxIndex = event.getLastIndex();
-
-                    for (int i = minIndex; i <= maxIndex; i++) {
-                        if (lista.isSelectedIndex(i)) {
-                            // Item de índice i está selecionado
-                        }
-                    }
                 }
             }
         });
