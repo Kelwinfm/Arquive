@@ -6,13 +6,18 @@
  */
 package archive.view;
 
+import archive.controller.ControladorArchive;
+import archive.exceptions.CabecalhoEsgotadoException;
 import archive.model.Archive;
 import archive.model.Cabecalho;
 import archive.model.ItemCabecalho;
 import java.awt.Color;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.ListSelectionModel;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -47,9 +52,8 @@ public class TelaGerenciamento extends javax.swing.JFrame {
         //lista.setListData(listData);
         lista.addListSelectionListener(new ListSelectionListener() {
             @Override
-            public void valueChanged(ListSelectionEvent e) {
-                ListSelectionModel k = (ListSelectionModel) e.getSource();
-                if (k.isSelectionEmpty()) {
+            public void valueChanged(ListSelectionEvent event) {
+                if (event.getFirstIndex() == event.getLastIndex()) {
                     // sem seleção - vazio
 
                     jButton2.setEnabled(false);
@@ -60,10 +64,11 @@ public class TelaGerenciamento extends javax.swing.JFrame {
                     jButton2.setEnabled(true);
                     jButton4.setEnabled(true);
 
-                    int minIndex = k.getMinSelectionIndex();
-                    int maxIndex = k.getMaxSelectionIndex();
+                    int minIndex = event.getFirstIndex();
+                    int maxIndex = event.getLastIndex();
+
                     for (int i = minIndex; i <= maxIndex; i++) {
-                        if (k.isSelectedIndex(i)) {
+                        if (lista.isSelectedIndex(i)) {
                             // Item de índice i está selecionado
                         }
                     }
@@ -80,7 +85,7 @@ public class TelaGerenciamento extends javax.swing.JFrame {
         List<String> conteudoLista = new ArrayList<>();
 
         for (ItemCabecalho item : cabecalho.getItens()) {
-            conteudoLista.add(item.getNome() + "\t" + item.getTamanho());
+            conteudoLista.add(item.getNome() + ", " + item.getTamanho());
         }
 
         String[] arrayItens = new String[conteudoLista.size()];
@@ -92,6 +97,16 @@ public class TelaGerenciamento extends javax.swing.JFrame {
         return archive;
     }
 
+    @Override
+    public void dispose() {
+        try {
+            ControladorArchive.fecharSessao();
+        } catch (IOException ex) {
+        }
+
+        super.dispose();
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -100,10 +115,9 @@ public class TelaGerenciamento extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
 
         jPanel1 = new javax.swing.JPanel();
-        jButton3 = new javax.swing.JButton();
+        botaoInserir = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
@@ -115,15 +129,15 @@ public class TelaGerenciamento extends javax.swing.JFrame {
 
         jPanel1.setLayout(new java.awt.GridLayout(1, 0));
 
-        jButton3.setBackground(COR_FUNDO_BOTOES);
-        jButton3.setForeground(COR_LETRA_BOTOES);
-        jButton3.setText("Inserir um arquivo");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        botaoInserir.setBackground(COR_FUNDO_BOTOES);
+        botaoInserir.setForeground(COR_LETRA_BOTOES);
+        botaoInserir.setText("Inserir um arquivo");
+        botaoInserir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                botaoInserirActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton3);
+        jPanel1.add(botaoInserir);
 
         jButton2.setBackground(COR_FUNDO_BOTOES);
         jButton2.setForeground(COR_LETRA_BOTOES);
@@ -188,17 +202,40 @@ public class TelaGerenciamento extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
+    private void botaoInserirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoInserirActionPerformed
+        JFileChooser selecionador = new JFileChooser();
+        selecionador.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        selecionador.showOpenDialog(null);
+
+        File arquivo = selecionador.getSelectedFile();
+
+        if (arquivo == null) {
+            // Nenhum arquivo selecionado
+            return;
+        }
+
+        try {
+            ControladorArchive.inserirArquivo(arquivo);
+
+            atualizarListaArquivos();
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, "Falha ao carregar arquivo");
+            return;
+        } catch (CabecalhoEsgotadoException ex) {
+            JOptionPane.showMessageDialog(
+                    null, "Não é possível adicionar mais arquivos neste archive"
+            );
+        }
+
+    }//GEN-LAST:event_botaoInserirActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton4ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton botaoInserir;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
