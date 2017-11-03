@@ -117,7 +117,7 @@ public class TelaGerenciamento extends javax.swing.JFrame {
 
             conteudoLista.add(new SimpleEntry<>(
                     item.getNome(),
-                    "Tamamanho: " + item.getTamanho() + " bytes"
+                    "Tamanho: " + item.getTamanho() + " bytes"
                     + ", Status: " + status
             ));
         }
