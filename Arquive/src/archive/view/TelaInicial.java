@@ -13,10 +13,6 @@ import archive.model.Archive;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 
 public class TelaInicial extends javax.swing.JFrame {
 
@@ -124,12 +120,7 @@ public class TelaInicial extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void abrirExistenteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_abrirExistenteActionPerformed
-
-        JFileChooser selecionador = new JFileChooser();
-        selecionador.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        selecionador.showOpenDialog(null);
-
-        File arquivo = selecionador.getSelectedFile();
+        File arquivo = TelasPopup.obterArquivoParaAbrir();
 
         if (arquivo == null) {
             // Nenhum arquivo selecionado
@@ -141,21 +132,18 @@ public class TelaInicial extends javax.swing.JFrame {
                 dispose();
             }
         } catch (FileNotFoundException ex) {
-            JOptionPane.showMessageDialog(null, "Arquivo não encontrado");
+            TelasPopup.mostrarMensagem("Arquivo não encontrado");
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(null, "Falha ao abrir o arquivo");
+            TelasPopup.mostrarMensagem("Falha ao abrir o arquivo");
         } catch (CabecalhoCorrompidoException ex) {
-            JOptionPane.showMessageDialog(null, "Arquivo corrompido");
+            TelasPopup.mostrarMensagem("Arquivo corrompido");
         }
 
     }//GEN-LAST:event_abrirExistenteActionPerformed
 
     private void criarNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_criarNovoActionPerformed
-        JFileChooser selecionador = new JFileChooser();
-        selecionador.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        selecionador.showSaveDialog(null);
-
-        File arquivo = selecionador.getSelectedFile();
+        TelasPopup telaSalvarArquivo = new TelasPopup();
+        File arquivo = telaSalvarArquivo.obterArquivoParaSalvar();
 
         if (arquivo == null) {
             // Nenhum arquivo selecionado
@@ -169,7 +157,7 @@ public class TelaInicial extends javax.swing.JFrame {
                 return;
             }
         } catch (IOException | CabecalhoEsgotadoException ex) {
-            JOptionPane.showMessageDialog(null, "Falha ao criar novo arquivo");
+            TelasPopup.mostrarMensagem("Falha ao criar novo arquivo");
             return;
         }
 
@@ -178,16 +166,14 @@ public class TelaInicial extends javax.swing.JFrame {
                 dispose();
             }
         } catch (FileNotFoundException ex) {
-            JOptionPane.showMessageDialog(
-                    null, "Não foi possível encontrar o arquivo criado. "
+            TelasPopup.mostrarMensagem(
+                    "Não foi possível encontrar o arquivo criado. "
                     + "Ele pode ter sido removido por outro processo"
             );
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(null, "Falha ao abrir arquivo criado");
+            TelasPopup.mostrarMensagem("Falha ao abrir arquivo criado");
         } catch (CabecalhoCorrompidoException ex) {
-            JOptionPane.showMessageDialog(
-                    null, "Houve um problema na criação do arquivo"
-            );
+            TelasPopup.mostrarMensagem("Houve um problema na criação do arquivo");
         }
     }//GEN-LAST:event_criarNovoActionPerformed
 
