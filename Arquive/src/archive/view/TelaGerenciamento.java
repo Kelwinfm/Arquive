@@ -14,10 +14,10 @@ import archive.model.ItemCabecalho;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
+import java.util.Map.Entry;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -30,6 +30,14 @@ public class TelaGerenciamento extends javax.swing.JFrame {
     private static final Color COR_LETRA_BOTOES = new Color(255, 255, 255);
 
     private static final Color COR_FUNDO_SELECAO = new Color(187, 222, 251);
+
+    private final List<Integer> indicesSelecionados = new ArrayList<>();
+
+    /**
+     * Lista de nomes e tamanhos de arquivos. Cujo conteúdo está sendo exibido
+     * na janela
+     */
+    private final List<Entry<String, Integer>> conteudoLista = new ArrayList<>();
 
     /**
      * Creates new form TelaInicial
@@ -48,12 +56,11 @@ public class TelaGerenciamento extends javax.swing.JFrame {
 
     private void inicializar() {
         // Adicionar listener de eventos à lista
-        //lista.getSelectedValue();
-        //lista.setListData(listData);
         lista.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent event) {
                 boolean possuiSelecao = false;
+                indicesSelecionados.clear();
 
                 // Encontrar índices selecionados
                 int minIndex = event.getFirstIndex();
@@ -63,15 +70,16 @@ public class TelaGerenciamento extends javax.swing.JFrame {
                     if (lista.isSelectedIndex(i)) {
                         // Item de índice i está selecionado
                         possuiSelecao = true;
+                        indicesSelecionados.add(i);
                     }
                 }
 
                 if (!possuiSelecao) {
                     // Sem seleção
-                    jButton2.setEnabled(false);
+                    botaoExtrair.setEnabled(false);
                     jButton4.setEnabled(false);
                 } else {
-                    jButton2.setEnabled(true);
+                    botaoExtrair.setEnabled(true);
                     jButton4.setEnabled(true);
                 }
             }
@@ -82,15 +90,20 @@ public class TelaGerenciamento extends javax.swing.JFrame {
 
     public void atualizarListaArquivos() {
         Cabecalho cabecalho = archive.getCabecalho();
-
-        List<String> conteudoLista = new ArrayList<>();
+        conteudoLista.clear();
 
         for (ItemCabecalho item : cabecalho.getItens()) {
-            conteudoLista.add(item.getNome() + ", " + item.getTamanho());
+            conteudoLista.add(new SimpleEntry<>(
+                    item.getNome(), item.getTamanho()
+            ));
         }
 
+        // Gerar array de itens para exibir na tela
         String[] arrayItens = new String[conteudoLista.size()];
-        arrayItens = conteudoLista.toArray(arrayItens);
+        for (int i = 0; i < conteudoLista.size(); i++) {
+            Entry item = conteudoLista.get(i);
+            arrayItens[i] = item.getKey() + ", tamanho: " + item.getValue() + " bytes";
+        }
         lista.setListData(arrayItens);
     }
 
@@ -119,7 +132,7 @@ public class TelaGerenciamento extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         botaoInserir = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        botaoExtrair = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -140,16 +153,16 @@ public class TelaGerenciamento extends javax.swing.JFrame {
         });
         jPanel1.add(botaoInserir);
 
-        jButton2.setBackground(COR_FUNDO_BOTOES);
-        jButton2.setForeground(COR_LETRA_BOTOES);
-        jButton2.setText("Extrair selecionados");
-        jButton2.setEnabled(false);
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        botaoExtrair.setBackground(COR_FUNDO_BOTOES);
+        botaoExtrair.setForeground(COR_LETRA_BOTOES);
+        botaoExtrair.setText("Extrair selecionados");
+        botaoExtrair.setEnabled(false);
+        botaoExtrair.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                botaoExtrairActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton2);
+        jPanel1.add(botaoExtrair);
 
         jButton4.setBackground(COR_FUNDO_BOTOES);
         jButton4.setForeground(COR_LETRA_BOTOES);
@@ -199,16 +212,39 @@ public class TelaGerenciamento extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+    private void botaoExtrairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoExtrairActionPerformed
+        File local;
+
+        do {
+            local = TelasPopup.obterDiretorioParaSalvar();
+
+            if (local == null) {
+                // Nenhum diretorio selecionado (usuário cancelou)
+                return;
+            }
+
+            if (!local.isDirectory()) {
+                TelasPopup.mostrarMensagem("Por favor, escolha um diretório");
+            }
+        } while (!local.isDirectory());
+
+        try {
+            List<String> nomes = new ArrayList<>();
+            for (Integer indice : indicesSelecionados) {
+                nomes.add(conteudoLista.get(indice).getKey());
+            }
+
+            ControladorArchive.extrairArquivos(nomes, local);
+
+            atualizarListaArquivos();
+        } catch (IOException ex) {
+            TelasPopup.mostrarMensagem("Falha ao extrair algum dos arquivos");
+            return;
+        }
+    }//GEN-LAST:event_botaoExtrairActionPerformed
 
     private void botaoInserirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoInserirActionPerformed
-        JFileChooser selecionador = new JFileChooser();
-        selecionador.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        selecionador.showOpenDialog(null);
-
-        File arquivo = selecionador.getSelectedFile();
+        File arquivo = TelasPopup.obterArquivoParaAbrir();
 
         if (arquivo == null) {
             // Nenhum arquivo selecionado
@@ -220,11 +256,11 @@ public class TelaGerenciamento extends javax.swing.JFrame {
 
             atualizarListaArquivos();
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(null, "Falha ao carregar arquivo");
+            TelasPopup.mostrarMensagem("Falha ao carregar arquivo");
             return;
         } catch (CabecalhoEsgotadoException ex) {
-            JOptionPane.showMessageDialog(
-                    null, "Não é possível adicionar mais arquivos neste archive"
+            TelasPopup.mostrarMensagem(
+                    "Não é possível adicionar mais arquivos neste archive"
             );
         }
 
@@ -235,8 +271,8 @@ public class TelaGerenciamento extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton4ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton botaoExtrair;
     private javax.swing.JButton botaoInserir;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
