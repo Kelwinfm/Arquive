@@ -141,16 +141,16 @@ public class TelaInicial extends javax.swing.JFrame {
     }//GEN-LAST:event_abrirExistenteActionPerformed
 
     private void criarNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_criarNovoActionPerformed
-        TelasPopup telaSalvarArquivo = new TelasPopup();
-        File arquivo = telaSalvarArquivo.obterArquivoParaSalvar();
+        File arquivo = TelasPopup.obterArquivoParaSalvar();
 
         if (arquivo == null) {
             // Nenhum arquivo selecionado
             return;
         }
 
+        Archive archive;
         try {
-            Archive archive = ControladorArchive.criarNovoArchive(arquivo);
+            archive = ControladorArchive.criarNovoArchive(arquivo);
 
             if (archive == null) {
                 return;
@@ -161,7 +161,7 @@ public class TelaInicial extends javax.swing.JFrame {
         }
 
         try {
-            if (ControladorArchive.abrirArchive(arquivo) == true) {
+            if (ControladorArchive.abrirArchive(archive.getLocal()) == true) {
                 dispose();
             }
         } catch (FileNotFoundException ex) {

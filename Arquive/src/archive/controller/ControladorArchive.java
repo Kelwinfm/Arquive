@@ -66,7 +66,7 @@ public class ControladorArchive {
 
         // Criar cabeçalho vazio e adicionar ao arquivo
         Cabecalho cabecalho = new Cabecalho();
-        Archive archive = new Archive(cabecalho);
+        Archive archive = new Archive(cabecalho, arquivo);
 
         RandomAccessFile acessoArquivo = new RandomAccessFile(arquivo, "rw");
         CabecalhoDAO.gravarCabecalho(acessoArquivo, cabecalho);
@@ -90,7 +90,7 @@ public class ControladorArchive {
         // Carregar cabeçalho do archive
         Cabecalho cabecalho = CabecalhoDAO.carregarCabecalho(acessoArquivoAberto);
 
-        archiveAberto = new Archive(cabecalho);
+        archiveAberto = new Archive(cabecalho, file);
 
         // Exibir tela de gerenciamento
         TelaGerenciamento telaGerenciamento = new TelaGerenciamento(archiveAberto);

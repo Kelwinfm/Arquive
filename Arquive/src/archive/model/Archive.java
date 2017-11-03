@@ -6,6 +6,8 @@
  */
 package archive.model;
 
+import java.io.File;
+
 /**
  * Descritor de um archive contendo cabeçalho
  */
@@ -13,8 +15,11 @@ public class Archive {
 
     private Cabecalho cabecalho;
 
-    public Archive(Cabecalho cabecalho) {
+    private final File local;
+
+    public Archive(Cabecalho cabecalho, File local) {
         this.cabecalho = cabecalho;
+        this.local = local;
     }
 
     public Cabecalho getCabecalho() {
@@ -23,6 +28,10 @@ public class Archive {
 
     public void setCabecalho(Cabecalho cabecalho) {
         this.cabecalho = cabecalho;
+    }
+
+    public File getLocal() {
+        return local;
     }
 
 }
