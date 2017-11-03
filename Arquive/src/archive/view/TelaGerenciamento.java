@@ -7,6 +7,7 @@
 package archive.view;
 
 import archive.controller.ControladorArchive;
+import archive.exceptions.CabecalhoCorrompidoException;
 import archive.exceptions.CabecalhoEsgotadoException;
 import archive.model.Archive;
 import archive.model.Cabecalho;
@@ -34,10 +35,10 @@ public class TelaGerenciamento extends javax.swing.JFrame {
     private final List<Integer> indicesSelecionados = new ArrayList<>();
 
     /**
-     * Lista de nomes e tamanhos de arquivos. Cujo conteúdo está sendo exibido
-     * na janela
+     * Lista de nomes e informação dos arquivos. Cujo conteúdo está sendo
+     * exibido na janela
      */
-    private final List<Entry<String, Integer>> conteudoLista = new ArrayList<>();
+    private final List<Entry<String, String>> conteudoLista = new ArrayList<>();
 
     /**
      * Creates new form TelaInicial
@@ -77,10 +78,10 @@ public class TelaGerenciamento extends javax.swing.JFrame {
                 if (!possuiSelecao) {
                     // Sem seleção
                     botaoExtrair.setEnabled(false);
-                    jButton4.setEnabled(false);
+                    botaoApagar.setEnabled(false);
                 } else {
                     botaoExtrair.setEnabled(true);
-                    jButton4.setEnabled(true);
+                    botaoApagar.setEnabled(true);
                 }
             }
         });
@@ -89,12 +90,35 @@ public class TelaGerenciamento extends javax.swing.JFrame {
     }
 
     public void atualizarListaArquivos() {
+        try {
+            ControladorArchive.recarregarCabecalho();
+        } catch (CabecalhoCorrompidoException ex) {
+            TelasPopup.mostrarMensagem("Arquivo corrompido");
+        } catch (IOException ex) {
+            TelasPopup.mostrarMensagem("Falha ao tentar acessar o archive");
+        }
+
         Cabecalho cabecalho = archive.getCabecalho();
         conteudoLista.clear();
 
         for (ItemCabecalho item : cabecalho.getItens()) {
+            String status = "";
+            switch (item.getStatus()) {
+                case Excluido:
+                    status = "Excluído";
+                    break;
+                case Valido:
+                    status = "Válido";
+                    break;
+                case Invalidado:
+                    status = "Invalidado";
+                    break;
+            }
+
             conteudoLista.add(new SimpleEntry<>(
-                    item.getNome(), item.getTamanho()
+                    item.getNome(),
+                    "Tamamanho: " + item.getTamanho() + " bytes"
+                    + ", Status: " + status
             ));
         }
 
@@ -102,7 +126,7 @@ public class TelaGerenciamento extends javax.swing.JFrame {
         String[] arrayItens = new String[conteudoLista.size()];
         for (int i = 0; i < conteudoLista.size(); i++) {
             Entry item = conteudoLista.get(i);
-            arrayItens[i] = item.getKey() + ", tamanho: " + item.getValue() + " bytes";
+            arrayItens[i] = item.getKey() + ", " + item.getValue();
         }
         lista.setListData(arrayItens);
     }
@@ -133,7 +157,8 @@ public class TelaGerenciamento extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         botaoInserir = new javax.swing.JButton();
         botaoExtrair = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        botaoApagar = new javax.swing.JButton();
+        botaoAtualizar = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         lista = new javax.swing.JList<>();
@@ -164,16 +189,26 @@ public class TelaGerenciamento extends javax.swing.JFrame {
         });
         jPanel1.add(botaoExtrair);
 
-        jButton4.setBackground(COR_FUNDO_BOTOES);
-        jButton4.setForeground(COR_LETRA_BOTOES);
-        jButton4.setText("Apagar selecionados");
-        jButton4.setEnabled(false);
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        botaoApagar.setBackground(COR_FUNDO_BOTOES);
+        botaoApagar.setForeground(COR_LETRA_BOTOES);
+        botaoApagar.setText("Apagar selecionados");
+        botaoApagar.setEnabled(false);
+        botaoApagar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                botaoApagarActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton4);
+        jPanel1.add(botaoApagar);
+
+        botaoAtualizar.setBackground(COR_FUNDO_BOTOES);
+        botaoAtualizar.setForeground(COR_LETRA_BOTOES);
+        botaoAtualizar.setText("Atualizar lista");
+        botaoAtualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botaoAtualizarActionPerformed(evt);
+            }
+        });
+        jPanel1.add(botaoAtualizar);
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -199,7 +234,7 @@ public class TelaGerenciamento extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 617, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -235,45 +270,62 @@ public class TelaGerenciamento extends javax.swing.JFrame {
             }
 
             ControladorArchive.extrairArquivos(nomes, local);
-
-            atualizarListaArquivos();
         } catch (IOException ex) {
             TelasPopup.mostrarMensagem("Falha ao extrair algum dos arquivos");
-            return;
         }
+
+        atualizarListaArquivos();
     }//GEN-LAST:event_botaoExtrairActionPerformed
 
     private void botaoInserirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoInserirActionPerformed
-        File arquivo = TelasPopup.obterArquivoParaAbrir();
+        File[] arquivos = TelasPopup.obterArquivosParaAbrir();
 
-        if (arquivo == null) {
+        if (arquivos == null || arquivos.length == 0) {
             // Nenhum arquivo selecionado
             return;
         }
 
         try {
-            ControladorArchive.inserirArquivo(arquivo);
-
-            atualizarListaArquivos();
+            for (int i = 0; i < arquivos.length; i++) {
+                File arquivo = arquivos[i];
+                ControladorArchive.inserirArquivo(arquivo);
+            }
         } catch (IOException ex) {
-            TelasPopup.mostrarMensagem("Falha ao carregar arquivo");
-            return;
+            TelasPopup.mostrarMensagem("Falha ao carregar algum dos arquivos");
         } catch (CabecalhoEsgotadoException ex) {
             TelasPopup.mostrarMensagem(
                     "Não é possível adicionar mais arquivos neste archive"
             );
         }
 
+        atualizarListaArquivos();
+
     }//GEN-LAST:event_botaoInserirActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
+    private void botaoApagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoApagarActionPerformed
+        try {
+            for (Integer indice : indicesSelecionados) {
+                String nome = conteudoLista.get(indice).getKey();
+                ControladorArchive.apagarArquivo(nome);
+            }
+
+            atualizarListaArquivos();
+        } catch (IOException | CabecalhoEsgotadoException ex) {
+            TelasPopup.mostrarMensagem("Falha ao apagar algum dos arquivos");
+        }
+
+        atualizarListaArquivos();
+    }//GEN-LAST:event_botaoApagarActionPerformed
+
+    private void botaoAtualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoAtualizarActionPerformed
+        atualizarListaArquivos();
+    }//GEN-LAST:event_botaoAtualizarActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton botaoApagar;
+    private javax.swing.JButton botaoAtualizar;
     private javax.swing.JButton botaoExtrair;
     private javax.swing.JButton botaoInserir;
-    private javax.swing.JButton jButton4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
