@@ -137,9 +137,10 @@ public class ControladorArchive {
             // Localizar lacuna disponível
             // First fit (primeiro encaixe)
             ItemCabecalho lacuna = null;
-            for (ItemCabecalho i : cabecalho.getItens()) {
-                if (i.getStatus() == Status.Excluido && i.getTamanho() >= arquivo.getTamanho()) {
-                    lacuna = i;
+            for (ItemCabecalho item : cabecalho.getItens()) {
+                if (item.getStatus() != Status.Valido
+                        && item.getTamanho() >= arquivo.getTamanho()) {
+                    lacuna = item;
                     break;
                 }
             }
@@ -161,7 +162,7 @@ public class ControladorArchive {
                     // Redimensionar e reposicionar lacuna
                     lacuna.setTamanho(lacuna.getTamanho() - arquivo.getTamanho());
                     lacuna.setPosicao(lacuna.getPosicao() + arquivo.getTamanho());
-                    
+
                     lacuna.setStatus(Status.Invalidado);
                 }
             }
@@ -233,14 +234,33 @@ public class ControladorArchive {
 
         Cabecalho cabecalho = archiveAberto.getCabecalho();
 
-        for (ItemCabecalho itemCabecalho : cabecalho.getItens()) {
+        List<ItemCabecalho> itensCabecalho = cabecalho.getItens();
+
+        for (int i = 0; i < itensCabecalho.size(); i++) {
+            ItemCabecalho itemCabecalho = itensCabecalho.get(i);
+
             if (itemCabecalho.getNome().equals(nome)) {
-                itemCabecalho.setStatus(Status.Excluido);
+                // Se o arquivo não ocupar espaço
+                if (itemCabecalho.getTamanho() == 0) {
+                    cabecalho.removerItem(itemCabecalho);
+                    continue;
+                }
+
+                if (itemCabecalho.getStatus() == Status.Valido) {
+                    itemCabecalho.setStatus(Status.Excluido);
+                }
 
                 // Verificar posição física no archive
-                if (itemCabecalho == cabecalho.getItemUltimoArquivo()) {
+                while (true) {
+                    ItemCabecalho ultimoArquivo = cabecalho.getItemUltimoArquivo();
+                    if (ultimoArquivo == null || ultimoArquivo.getStatus() == Status.Valido) {
+                        break;
+                    }
+
                     // O arquivo ocupa última posição
-                    ArchiveDAO.removerArquivoDoFinal(acessoArquivoAberto, itemCabecalho);
+                    // Remover fisicamente
+                    ArchiveDAO.removerArquivoDoFinal(acessoArquivoAberto, ultimoArquivo);
+                    cabecalho.removerItem(ultimoArquivo);
                 }
             }
         }
