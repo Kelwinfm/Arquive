@@ -13,8 +13,19 @@ package archive.model;
 public class ItemCabecalho {
 
     public static enum Status {
+        /**
+         * Arquivo está válido
+         */
         Valido,
-        Excluido
+        /**
+         * Arquivo está apagado dentro do achive
+         */
+        Excluido,
+        /**
+         * Arquivo que antes era Excluido foi redimensionado em uma realocação
+         * para dar espaço a outro arquivo
+         */
+        Invalidado
     }
 
     /**
