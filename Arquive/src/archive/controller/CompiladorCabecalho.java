@@ -67,14 +67,6 @@ public class CompiladorCabecalho {
     }
 
     /**
-     * Concatenar uma string ao array de bytes
-     */
-    private void concatenarString(String string) throws CabecalhoEsgotadoException {
-        byte[] stringEmBytes = converterStringUTF8EmBytes(string);
-        concatenarArrayDeBytes(stringEmBytes);
-    }
-
-    /**
      * Converter um cabeçalho para um array de bytes
      *
      * @return Lista de bytes representando a forma compilada do cabeçalho
@@ -102,13 +94,14 @@ public class CompiladorCabecalho {
             // Avançar um byte
             posicaoAtual++;
 
+            byte[] nomeEmBytes = converterStringUTF8EmBytes(item.getNome());
+
             // Concatenar tamanho do nome ao vetor
-            int tamanhoNome = item.getNome().length();
+            int tamanhoNome = nomeEmBytes.length;
             concatenarInteiro(tamanhoNome);
 
             // Concatenar nome ao vetor
-            String nome = item.getNome();
-            concatenarString(nome);
+            concatenarArrayDeBytes(nomeEmBytes);
 
             // Concatenar posição de início do arquivo
             int posicaoInicio = item.getPosicao();

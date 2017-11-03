@@ -9,6 +9,7 @@ package archive.controller;
 import archive.dao.ArchiveDAO;
 import archive.dao.BinarioDAO;
 import archive.dao.CabecalhoDAO;
+import archive.dao.GenericDAO;
 import archive.exceptions.CabecalhoCorrompidoException;
 import archive.exceptions.CabecalhoEsgotadoException;
 import archive.model.Archive;
@@ -17,6 +18,7 @@ import archive.model.Cabecalho;
 import archive.model.ItemCabecalho;
 import archive.model.ItemCabecalho.Status;
 import archive.view.TelaGerenciamento;
+import archive.view.TelasPopup;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -38,7 +40,7 @@ public class ControladorArchive {
 
     /**
      *
-     * @return Archive criado
+     * @return Archive criado OU null se não for criado
      * @throws IOException
      * @throws CabecalhoEsgotadoException
      */
@@ -46,6 +48,14 @@ public class ControladorArchive {
             throws IOException, CabecalhoEsgotadoException {
         if (!arquivo.toPath().toString().endsWith(EXTENSAO)) {
             arquivo = new File(arquivo.toPath() + EXTENSAO);
+        }
+
+        // Verificar se arquivo existe
+        if (arquivo.exists()) {
+            if (TelasPopup.verificarConfirmacaoSobrescrita() == false) {
+                // O usuário deseja cancelar a operação abrir archive
+                return null;
+            }
         }
 
         // Limpar arquivo
@@ -257,6 +267,47 @@ public class ControladorArchive {
         }
 
         return lista;
+    }
+
+    /**
+     * Extrair arquivos do archive aberto na sessão a partir de seus nomes
+     *
+     * @param nomesArquivos
+     * @param local Local para onde os arquivos serão extraídos
+     */
+    public static void extrairArquivos(List<String> nomesArquivos, File local)
+            throws IOException {
+        if (archiveAberto == null) {
+            assert false : "Nenhum arquivo aberto na sessão";
+            return;
+        }
+
+        for (String nome : nomesArquivos) {
+            Cabecalho cabecalho = archiveAberto.getCabecalho();
+
+            for (ItemCabecalho item : cabecalho.getItens()) {
+                if (item.getNome().equals(nome)) {
+                    // Extrair este item
+
+                    Arquivo arquivo = BinarioDAO.lerArquivo(
+                            archiveAberto, acessoArquivoAberto, item
+                    );
+
+                    File arquivoSalvar = new File(local, arquivo.getNome());
+
+                    if (arquivoSalvar.exists()) {
+                        if (!TelasPopup.verificarConfirmacaoSobrescrita()) {
+                            continue;
+                        }
+                    }
+
+                    RandomAccessFile acessoArquivoSalvar = new RandomAccessFile(
+                            arquivoSalvar, "rw"
+                    );
+                    GenericDAO.gravarBytes(acessoArquivoSalvar, 0, arquivo.getConteudo());
+                }
+            }
+        }
     }
 
 }

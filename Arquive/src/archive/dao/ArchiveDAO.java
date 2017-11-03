@@ -13,7 +13,7 @@ import java.io.RandomAccessFile;
 /**
  * Responsável por gerenciar um archive físico
  */
-public class ArchiveDAO extends AbstractDAO {
+public class ArchiveDAO extends GenericDAO {
 
     /**
      * Remover arquivo fisicamente do archive
