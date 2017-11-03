@@ -35,6 +35,17 @@ public class TelasPopup {
         return null;
     }
 
+    public static File[] obterArquivosParaAbrir() {
+        JFileChooser selecionador = new JFileChooser();
+        selecionador.setMultiSelectionEnabled(true);
+        selecionador.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+        if (selecionador.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            return selecionador.getSelectedFiles();
+        }
+        return null;
+    }
+
     public static File obterDiretorioParaSalvar() {
         JFileChooser selecionador = new JFileChooser();
         selecionador.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);

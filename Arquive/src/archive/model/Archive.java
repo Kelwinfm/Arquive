@@ -6,28 +6,23 @@
  */
 package archive.model;
 
-import java.io.File;
-
 /**
- * Descritor de um archive contendo cabeçalho e gerenciador da parte binária
+ * Descritor de um archive contendo cabeçalho
  */
 public class Archive {
 
-    private final Cabecalho cabecalho;
+    private Cabecalho cabecalho;
 
-    private final File arquivo;
-
-    public Archive(Cabecalho cabecalho, File arquivo) {
+    public Archive(Cabecalho cabecalho) {
         this.cabecalho = cabecalho;
-        this.arquivo = arquivo;
-    }
-
-    public File getArquivo() {
-        return arquivo;
     }
 
     public Cabecalho getCabecalho() {
         return cabecalho;
+    }
+
+    public void setCabecalho(Cabecalho cabecalho) {
+        this.cabecalho = cabecalho;
     }
 
 }
