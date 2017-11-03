@@ -98,7 +98,8 @@ public class InterpretadorCabecalho {
         Cabecalho cabecalho = new Cabecalho();
 
         // Interpretar itens do cabeçalho
-        for (posicaoAtual = 0; posicaoAtual < bytes.length; posicaoAtual++) {
+        posicaoAtual = 0;
+        while (posicaoAtual < bytes.length) {
             if (bytes[posicaoAtual] == 0) {
                 // Fim do cabeçalho
                 break;
