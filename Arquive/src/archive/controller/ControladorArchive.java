@@ -66,7 +66,7 @@ public class ControladorArchive {
 
         // Criar cabeçalho vazio e adicionar ao arquivo
         Cabecalho cabecalho = new Cabecalho();
-        Archive archive = new Archive(cabecalho, arquivo);
+        Archive archive = new Archive(cabecalho);
 
         RandomAccessFile acessoArquivo = new RandomAccessFile(arquivo, "rw");
         CabecalhoDAO.gravarCabecalho(acessoArquivo, cabecalho);
@@ -90,7 +90,7 @@ public class ControladorArchive {
         // Carregar cabeçalho do archive
         Cabecalho cabecalho = CabecalhoDAO.carregarCabecalho(acessoArquivoAberto);
 
-        archiveAberto = new Archive(cabecalho, file);
+        archiveAberto = new Archive(cabecalho);
 
         // Exibir tela de gerenciamento
         TelaGerenciamento telaGerenciamento = new TelaGerenciamento(archiveAberto);
@@ -161,6 +161,8 @@ public class ControladorArchive {
                     // Redimensionar e reposicionar lacuna
                     lacuna.setTamanho(lacuna.getTamanho() - arquivo.getTamanho());
                     lacuna.setPosicao(lacuna.getPosicao() + arquivo.getTamanho());
+                    
+                    lacuna.setStatus(Status.Invalidado);
                 }
             }
         }
@@ -191,7 +193,7 @@ public class ControladorArchive {
      * @return Arquivo encontrado OU nulo se não for encontrado com este nome
      */
     public static Arquivo obterArquivo(String nome) throws IOException {
-        if (archiveAberto == null) {
+        if (archiveAberto == null || acessoArquivoAberto == null) {
             assert false : "Nenhum arquivo aberto na sessão";
             return null;
         }
@@ -224,7 +226,7 @@ public class ControladorArchive {
      */
     public static void apagarArquivo(String nome)
             throws IOException, CabecalhoEsgotadoException {
-        if (archiveAberto == null) {
+        if (archiveAberto == null || acessoArquivoAberto == null) {
             assert false : "Nenhum arquivo aberto na sessão";
             return;
         }
@@ -255,7 +257,7 @@ public class ControladorArchive {
     public static List<ItemCabecalho> listarArquivos() {
         List<ItemCabecalho> lista = new ArrayList<>();
 
-        if (archiveAberto == null) {
+        if (archiveAberto == null || acessoArquivoAberto == null) {
             assert false : "Nenhum arquivo aberto na sessão";
             return lista;
         }
@@ -277,7 +279,7 @@ public class ControladorArchive {
      */
     public static void extrairArquivos(List<String> nomesArquivos, File local)
             throws IOException {
-        if (archiveAberto == null) {
+        if (archiveAberto == null || acessoArquivoAberto == null) {
             assert false : "Nenhum arquivo aberto na sessão";
             return;
         }
@@ -308,6 +310,17 @@ public class ControladorArchive {
                 }
             }
         }
+    }
+
+    public static void recarregarCabecalho()
+            throws CabecalhoCorrompidoException, IOException {
+        if (archiveAberto == null || acessoArquivoAberto == null) {
+            assert false : "Nenhum arquivo aberto na sessão";
+            return;
+        }
+
+        Cabecalho cabecalho = CabecalhoDAO.carregarCabecalho(acessoArquivoAberto);
+        archiveAberto.setCabecalho(cabecalho);
     }
 
 }
