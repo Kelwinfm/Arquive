@@ -131,6 +131,9 @@ public class InterpretadorCabecalho {
                 case 2:
                     status = Status.Excluido;
                     break;
+                case 3:
+                    status = Status.Invalidado;
+                    break;
             }
 
             // Adicionar este novo item ao cabeçalho

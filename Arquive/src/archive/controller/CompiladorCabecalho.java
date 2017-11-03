@@ -87,6 +87,9 @@ public class CompiladorCabecalho {
                 case Excluido:
                     statusByte = 2;
                     break;
+                case Invalidado:
+                    statusByte = 3;
+                    break;
             }
 
             bytes[posicaoAtual] = statusByte;
