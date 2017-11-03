@@ -15,10 +15,11 @@ public class Archive {
 
     private Cabecalho cabecalho;
 
-    private File local;
+    private final File local;
 
     public Archive(Cabecalho cabecalho, File local) {
         this.cabecalho = cabecalho;
+        this.local = local;
     }
 
     public Cabecalho getCabecalho() {
