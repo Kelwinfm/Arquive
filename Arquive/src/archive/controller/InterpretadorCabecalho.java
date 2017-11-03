@@ -68,6 +68,10 @@ public class InterpretadorCabecalho {
      * @throws ParseException
      */
     private String interpretarStringUTF8(int tamanho) throws CabecalhoCorrompidoException {
+        if (tamanho < 0) {
+            throw new CabecalhoCorrompidoException("Tamanho inválido de string", posicaoAtual);
+        }
+
         if (bytes.length < posicaoAtual + tamanho) {
             throw new CabecalhoCorrompidoException("Fim de arquivo inesperado", posicaoAtual);
         }
