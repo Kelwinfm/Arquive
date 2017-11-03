@@ -12,6 +12,7 @@ import archive.exceptions.CabecalhoEsgotadoException;
 import archive.model.Archive;
 import archive.model.Cabecalho;
 import archive.model.ItemCabecalho;
+import archive.model.ItemCabecalho.Status;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
@@ -103,22 +104,14 @@ public class TelaGerenciamento extends javax.swing.JFrame {
 
         for (ItemCabecalho item : cabecalho.getItens()) {
             String status = "";
-            switch (item.getStatus()) {
-                case Excluido:
-                    status = "Excluído";
-                    break;
-                case Valido:
-                    status = "Válido";
-                    break;
-                case Invalidado:
-                    status = "Invalidado";
-                    break;
+            
+            if (item.getStatus() != Status.Valido) {
+                continue;
             }
 
             conteudoLista.add(new SimpleEntry<>(
                     item.getNome(),
                     "Tamanho: " + item.getTamanho() + " bytes"
-                    + ", Status: " + status
             ));
         }
 
